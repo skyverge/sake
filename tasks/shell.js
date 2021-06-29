@@ -185,6 +185,15 @@ module.exports = (gulp, plugins, sake) => {
     exec('git stash apply', done)
   })
 
+  gulp.task('shell:composer_status', (done) => {
+    if (fs.existsSync(path.join(process.cwd(), 'composer.json'))) {
+      exec('composer status -v', done)
+    } else {
+      log.info('No composer.json found, skipping composer status')
+      done()
+    }
+  })
+
   gulp.task('shell:composer_install', (done) => {
     if (fs.existsSync(path.join(process.cwd(), 'composer.json'))) {
       exec('composer install --no-dev', done)

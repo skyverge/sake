@@ -8,6 +8,11 @@ module.exports = (gulp, plugins, sake) => {
     return gulp.src(`${sake.config.paths.src}/${sake.config.paths.assets}/**/*.map`, defaultOptions).pipe(plugins.clean())
   })
 
+  // clean composer packages
+  gulp.task('clean:composer', () => {
+    return gulp.src(`${sake.config.paths.vendor}`, defaultOptions).pipe(plugins.clean())
+  })
+
   // clean (empty) build dir
   gulp.task('clean:build', () => {
     return gulp.src([
