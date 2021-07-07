@@ -65,7 +65,7 @@ module.exports = (gulp, plugins, sake) => {
       // ensure the required framework version is installed
       'deploy:validate_framework_version',
       // grab issues to close with commit
-      'get_issues_to_close',
+      'github:get_rissue',
       // git commit & push
       'shell:git_push_update',
       // rebuild plugin configuration (version number, etc)
@@ -73,8 +73,6 @@ module.exports = (gulp, plugins, sake) => {
         sake.buildPluginConfig()
         cb()
       },
-      // deploy to 3rd party repo
-      'deploy_to_production_repo',
       // create the zip, which will be attached to the releases
       'compress',
       // create releases, attaching the zip
@@ -83,6 +81,10 @@ module.exports = (gulp, plugins, sake) => {
 
     if (sake.config.deploy.wooId && sake.config.deploy.type === 'wc') {
       tasks.push('prompt:wc_upload')
+    }
+
+    if (sake.config.deploy.type === 'wp') {
+      tasks.push('deploy_to_wp_repo')
     }
 
     // finally, create a docs issue, if necessary
@@ -203,18 +205,6 @@ module.exports = (gulp, plugins, sake) => {
       },
       'github:create_release'
     ]
-
-    if (sake.config.deploy.type === 'wc' && sake.config.deploy.production) {
-      tasks = tasks.concat([
-        function (cb) {
-          sake.options.owner = sake.config.deploy.production.owner
-          sake.options.repo = sake.config.deploy.production.name
-          sake.options.prefix_release_tag = false
-          cb()
-        },
-        'github:create_release'
-      ])
-    }
 
     return gulp.series(tasks)(done)
   })
